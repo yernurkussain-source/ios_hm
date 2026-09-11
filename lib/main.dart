@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 
 void processOrder({
-  required String orderId,
+  required int orderId,
   required double itemprice,
   String? promocode,
   double? deliveryFee,
@@ -11,8 +11,13 @@ void processOrder({
   if(promocode == "SAVE10"){
     price = price * 0.9;
   }
+
   double delivery = deliveryFee ?? 500.0;
+  if(delivery<500){
+    delivery=500;
+  }
   double finalTotal = price + delivery;
+
 
 
   print('OrderId: $orderId');
@@ -25,9 +30,10 @@ void processOrder({
 
 void main() {
   void total = processOrder(
-    orderId: 'Order001',
+    orderId: 1,
     itemprice: 10000.0,
     promocode: 'SAVE10',
+    deliveryFee: 100
   );
 
 
@@ -48,53 +54,54 @@ void main() {
 //
 //   }
 //
-//   //Task 2
-//     int day = 31;
-//     int month = 12;
-//     int year = 2025;
-//
-//     int maxDay;
-//
-//     if (month == 2) {
-//       if (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)) {
-//         maxDay = 29;
-//       } else {
-//         maxDay = 28;
-//       }
-//     } else if (month == 4 || month == 6 || month == 9 || month == 11) {
-//       maxDay = 30;
-//     } else {
-//       maxDay = 31;
-//     }
-//
-//     if (day > maxDay) {
-//       print("invalid date");
-//     } else {
-//       day++;
-//
-//       if (day > maxDay) {
-//         day = 1;
-//         month++;
-//
-//         if (month > 12) {
-//           month = 1;
-//           year++;
-//         }
-//       }
-//
-//       print("$day.$month.$year");
-//     }
-//
-//
-//   //Task 3
-//     String s = 'flutter mobile development';
-//     int c = 0;
-//     for(int i=0;i<s.length;i++){
-//       if(s[i]=='a' || s[i]=='e' || s[i]=='i' || s[i]=='o' || s[i]=='u'){
-//         c++;
-//       }
-//     }
-//     print('Count: $c');
+  //Task 2
+  //   int day = 31;
+  //   int month = 15;
+  //   int year = 2025;
+  //
+  //   int maxDay;
+  //
+  //
+  //   if (month == 2) {
+  //     if (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)) {
+  //       maxDay = 29;
+  //     } else {
+  //       maxDay = 28;
+  //     }
+  //   } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+  //     maxDay = 30;
+  //   } else {
+  //     maxDay = 31;
+  //   }
+  //
+  //   if (day > maxDay || month >12 ) {
+  //     print("invalid date");
+  //   } else {
+  //     day++;
+  //
+  //     if (day > maxDay) {
+  //       day = 1;
+  //       month++;
+  //
+  //       if (month > 12) {
+  //         month = 1;
+  //         year++;
+  //       }
+  //     }
+  //
+  //     print("$day.$month.$year");
+  //   }
+  //
+  //
+  // //Task 3
+  //   String s = 'flutter mobile development';
+  //   int c = 0;
+  //   for(int i = 0; i < s.length; i++){
+  //     if(s[i]=='a' || s[i]=='e' || s[i]=='i' || s[i]=='o' || s[i]=='u'){
+  //       c++;
+  //     }
+  //   }
+  //   print('Count: $c');
 //
 //   //Task 4
 //   List<int> numbers = [14,88,3 ,42,99,12,67];
@@ -115,7 +122,7 @@ void main() {
 //   //Task 5
 //   int num = 11;
 //   int count = 0;
-//   for(int i=1;i<=num;i++){
+//   for(int i=2;i<=num/2;i++){
 //     if(num%i == 0){
 //       count++;
 //     }
