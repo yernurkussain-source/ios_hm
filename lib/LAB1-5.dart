@@ -80,12 +80,9 @@ void main() {
   int count = 0;
   for (int i = 2; i <= num / 2; i++) {
     if (num % i == 0) {
-      count++;
+      print('$num -> not prime number');
+      return;
     }
   }
-  if (count == 2) {
-    print('$num -> prime number');
-  } else {
-    print('$num -> not prime number');
-  }
+  print("$num -> Prime number");
 }
