@@ -110,6 +110,11 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
                       icon: Icon(Icons.favorite),
                       label: Text('Like'),
                     ),
+                    OutlinedButton.icon(
+                      onPressed: _decremnetLike,
+                      icon: Icon(Icons.favorite),
+                      label: Text('Unlike'),
+                    ),
 
                   ],
                 ),
@@ -126,7 +131,7 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
       _isFollowing = !_isFollowing;
       if (_isFollowing) {
         _followerCount++;
-      } else {
+      }else {
         _followerCount--;
       }
     });
@@ -135,6 +140,12 @@ class _ProfileCardScreenState extends State<ProfileCardScreen> {
   void _incrementLike() {
     setState(() {
       _likesCount++;
+    });
+  }
+
+  void _decremnetLike() {
+    setState(() {
+      _likesCount--;
     });
   }
 
