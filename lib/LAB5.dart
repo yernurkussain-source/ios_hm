@@ -40,9 +40,14 @@ class ProductPage extends StatelessWidget {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: const Icon(
-                    Icons.headphones,
-                    size: 100,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.asset(
+                      'assets/headphones.jpg',
+                      width: double.infinity,
+                      height: 250,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
 
