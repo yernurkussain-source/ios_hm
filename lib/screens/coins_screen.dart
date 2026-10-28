@@ -8,7 +8,6 @@ import '../theme/app_theme.dart';
 import '../widgets/coin.dart';
 import '../widgets/coin_reward_sheet.dart';
 
-
 class CoinsScreen extends StatelessWidget {
   final ShopState shop;
 

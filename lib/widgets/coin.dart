@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 const coinGold = Color(0xFFF5B82E);
 const coinGoldDeep = Color(0xFFD98E04);
 const coinGoldLight = Color(0xFFFFE08A);
+
 class CoinIcon extends StatelessWidget {
   final double size;
 

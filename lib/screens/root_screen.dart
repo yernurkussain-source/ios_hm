@@ -7,12 +7,12 @@ import '../theme/app_theme.dart';
 import '../widgets/glass.dart';
 import '../widgets/coin.dart';
 import 'cart_screen.dart';
+import 'catalog_screen.dart';
 import 'coins_screen.dart';
 import 'favorites_screen.dart';
 import 'feed_screen.dart';
 import 'product_detail_screen.dart';
 import 'profile_screen.dart';
-
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -25,7 +25,9 @@ class _RootScreenState extends State<RootScreen> {
   final shop = ShopState();
   int selectedTab = 0;
 
-  static const _titles = ['Discover', 'Favorites', 'Profile'];
+  static const _titles = ['Discover', 'Catalog', 'Favorites', 'Profile'];
+  static const _catalogTab = 1;
+  bool catalogGrid = false;
 
   @override
   void dispose() {
@@ -38,10 +40,8 @@ class _RootScreenState extends State<RootScreen> {
     setState(() => selectedTab = index);
   }
 
-
   Widget _tab(int index, Widget child) =>
       HeroMode(enabled: index == selectedTab, child: child);
-
 
   void openProduct(Product product) {
     Navigator.push(
@@ -71,11 +71,21 @@ class _RootScreenState extends State<RootScreen> {
     return ListenableBuilder(
       listenable: shop,
       builder: (context, _) => Scaffold(
-
         extendBody: true,
         appBar: AppBar(
           title: Text(_titles[selectedTab]),
           actions: [
+            // LAB 8: List ↔ Grid toggle, only on the Catalog tab.
+            if (selectedTab == _catalogTab)
+              IconButton(
+                tooltip: catalogGrid ? 'List view' : 'Grid view',
+                onPressed: () => setState(() => catalogGrid = !catalogGrid),
+                icon: Icon(
+                  catalogGrid
+                      ? Icons.view_list_rounded
+                      : Icons.grid_view_rounded,
+                ),
+              ),
             CoinPill(
               coins: shop.coins,
 
@@ -100,7 +110,11 @@ class _RootScreenState extends State<RootScreen> {
           children: [
             _tab(0, FeedScreen(shop: shop, onOpenProduct: openProduct)),
             _tab(
-              1,
+              _catalogTab,
+              CatalogScreen(grid: catalogGrid, onOpenProduct: openProduct),
+            ),
+            _tab(
+              2,
               FavoritesScreen(
                 shop: shop,
                 onOpenProduct: openProduct,
@@ -108,10 +122,10 @@ class _RootScreenState extends State<RootScreen> {
               ),
             ),
             _tab(
-              2,
+              3,
               ProfileScreen(
                 shop: shop,
-                onOpenFavorites: () => selectTab(1),
+                onOpenFavorites: () => selectTab(2),
                 onOpenCart: openCart,
                 onOpenCoins: openCoins,
               ),
@@ -131,6 +145,11 @@ class _RootScreenState extends State<RootScreen> {
                   icon: Icon(Icons.explore_outlined),
                   activeIcon: _ActivePill(icon: Icons.explore),
                   label: 'Feed',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.grid_view_outlined),
+                  activeIcon: _ActivePill(icon: Icons.grid_view_rounded),
+                  label: 'Catalog',
                 ),
                 BottomNavigationBarItem(
                   icon: Badge(

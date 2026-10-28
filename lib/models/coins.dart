@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class CoinLevel {
   final String name;
   final int minCoins;

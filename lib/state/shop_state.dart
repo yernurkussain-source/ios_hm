@@ -39,7 +39,7 @@ class ShopState extends ChangeNotifier {
   bool isFavorite(Product product) => _favorites.contains(product.id);
 
   List<Product> get favorites =>
-      catalog.where((p) => _favorites.contains(p.id)).toList();
+      allProducts.where((p) => _favorites.contains(p.id)).toList();
 
   Map<int, int> get cart => Map.unmodifiable(_cart);
 
@@ -108,7 +108,6 @@ class ShopState extends ChangeNotifier {
   bool get checkedInToday =>
       _lastCheckIn != null && _sameDay(_lastCheckIn!, _now());
 
-
   bool get _streakAlive {
     final last = _lastCheckIn;
     if (last == null) return false;
@@ -120,6 +119,7 @@ class ShopState extends ChangeNotifier {
     if (checkedInToday) return (streak - 1) % 7 + 1;
     return _streakAlive ? streak % 7 : 0;
   }
+
   int get nextCheckInDay => daysInCycle % 7 + 1;
 
   int checkIn() {
@@ -132,7 +132,6 @@ class ShopState extends ChangeNotifier {
     notifyListeners();
     return reward;
   }
-
 
   int missionProgress(Mission m) {
     final value = switch (m.type) {
@@ -157,7 +156,6 @@ class ShopState extends ChangeNotifier {
     notifyListeners();
     return m.reward;
   }
-
 
   void _earn(int amount, String title, CoinSource source) {
     if (amount <= 0) return;

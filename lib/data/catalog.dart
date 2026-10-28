@@ -75,8 +75,13 @@ const catalog = <Product>[
   ),
 ];
 
-Product productById(int id) => catalog.firstWhere((p) => p.id == id);
+/// Items created at runtime by pull-to-refresh (LAB 8), so cart and
+/// favorites can still find them by id.
+final generatedProducts = <Product>[];
 
+List<Product> get allProducts => [...catalog, ...generatedProducts];
+
+Product productById(int id) => allProducts.firstWhere((p) => p.id == id);
 
 String money(double value) {
   final digits = value.toStringAsFixed(0);

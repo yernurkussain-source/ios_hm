@@ -4,7 +4,6 @@ import '../state/shop_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coin.dart';
 
-
 class ProfileScreen extends StatelessWidget {
   final ShopState shop;
   final VoidCallback onOpenFavorites;
