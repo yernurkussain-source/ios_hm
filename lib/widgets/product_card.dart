@@ -29,7 +29,6 @@ class ProductCard extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              // Same Hero tag as on the detail screen → animated transition.
               Hero(
                 tag: product.heroTag,
                 child: ProductImage(

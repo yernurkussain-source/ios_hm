@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../data/catalog.dart';
+import '../state/cart_provider.dart';
 import '../state/shop_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coin.dart';
@@ -36,12 +38,20 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cart = context.watch<CartProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Cart')),
+      appBar: AppBar(
+        title: const Text('Your Cart'),
+        actions: [
+          if (cart.items.isNotEmpty)
+            TextButton(onPressed: cart.clear, child: const Text('Clear All')),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: ListenableBuilder(
         listenable: shop,
         builder: (context, _) {
-          final entries = shop.cart.entries.toList();
+          final entries = cart.items.entries.toList();
           if (entries.isEmpty) {
             return EmptyState(
               icon: Icons.shopping_bag_outlined,
@@ -61,7 +71,8 @@ class CartScreen extends StatelessWidget {
                   child: _CartItem(
                     productId: item.key,
                     quantity: item.value,
-                    onChange: (diff) => shop.changeQuantity(item.key, diff),
+                    onChange: (diff) => cart.changeQuantity(item.key, diff),
+                    onRemove: () => cart.remove(item.key),
                   ),
                 ),
               const SizedBox(height: 8),
@@ -91,11 +102,13 @@ class _CartItem extends StatelessWidget {
   final int productId;
   final int quantity;
   final ValueChanged<int> onChange;
+  final VoidCallback onRemove;
 
   const _CartItem({
     required this.productId,
     required this.quantity,
     required this.onChange,
+    required this.onRemove,
   });
 
   @override
@@ -122,20 +135,26 @@ class _CartItem extends StatelessWidget {
               ),
             ),
             IconButton(
+              tooltip: 'Decrease',
+              visualDensity: VisualDensity.compact,
               onPressed: () => onChange(-1),
-              icon: Icon(
-                quantity == 1
-                    ? Icons.delete_outline
-                    : Icons.remove_circle_outline,
-              ),
+              icon: const Icon(Icons.remove_circle_outline),
             ),
             Text(
               '$quantity',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             IconButton(
+              tooltip: 'Increase',
+              visualDensity: VisualDensity.compact,
               onPressed: () => onChange(1),
               icon: const Icon(Icons.add_circle_outline),
+            ),
+            IconButton(
+              tooltip: 'Remove ${p.name}',
+              visualDensity: VisualDensity.compact,
+              onPressed: onRemove,
+              icon: const Icon(Icons.delete_outline),
             ),
           ],
         ),

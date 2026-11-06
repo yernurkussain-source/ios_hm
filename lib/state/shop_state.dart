@@ -5,15 +5,20 @@ import 'package:flutter/foundation.dart';
 import '../data/catalog.dart';
 import '../models/coins.dart';
 import '../models/product.dart';
+import 'cart_provider.dart';
 
 typedef CheckoutResult = ({int earned, int spent, bool leveledUp});
 
 class ShopState extends ChangeNotifier {
-  ShopState({DateTime Function()? clock}) : _now = clock ?? DateTime.now;
+  ShopState({DateTime Function()? clock, CartProvider? cart})
+    : _now = clock ?? DateTime.now,
+      cartProvider = cart ?? CartProvider() {
+    cartProvider.addListener(notifyListeners);
+  }
 
   final DateTime Function() _now;
+  final CartProvider cartProvider;
   final Set<int> _favorites = {};
-  final Map<int, int> _cart = {};
   bool notificationsOn = true;
   static const coinValue = 10;
   static const maxCoinShare = 0.3;
@@ -23,7 +28,6 @@ class ShopState extends ChangeNotifier {
   int streak = 0;
   DateTime? _lastCheckIn;
   bool useCoins = false;
-  int _itemsAdded = 0;
   int _orders = 0;
   final Set<String> _claimedMissions = {};
   final List<CoinEntry> history = [];
@@ -41,14 +45,11 @@ class ShopState extends ChangeNotifier {
   List<Product> get favorites =>
       allProducts.where((p) => _favorites.contains(p.id)).toList();
 
-  Map<int, int> get cart => Map.unmodifiable(_cart);
+  Map<int, int> get cart => cartProvider.items;
 
-  int get cartQuantity => _cart.values.fold(0, (sum, count) => sum + count);
+  int get cartQuantity => cartProvider.quantity;
 
-  double get cartTotal => _cart.entries.fold(
-    0,
-    (sum, item) => sum + productById(item.key).price * item.value,
-  );
+  double get cartTotal => cartProvider.total;
 
   int get maxRedeemable =>
       min(coins, (cartTotal * maxCoinShare / coinValue).floor());
@@ -61,22 +62,11 @@ class ShopState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addToCart(Product product, {int quantity = 1}) {
-    _cart[product.id] = (_cart[product.id] ?? 0) + quantity;
-    _itemsAdded += quantity;
-    notifyListeners();
-  }
+  void addToCart(Product product, {int quantity = 1}) =>
+      cartProvider.add(product, quantity: quantity);
 
-  void changeQuantity(int productId, int difference) {
-    final next = (_cart[productId] ?? 0) + difference;
-    if (next <= 0) {
-      _cart.remove(productId);
-    } else {
-      _cart[productId] = next;
-    }
-    if (difference > 0) _itemsAdded += difference;
-    notifyListeners();
-  }
+  void changeQuantity(int productId, int difference) =>
+      cartProvider.changeQuantity(productId, difference);
 
   void setUseCoins(bool value) {
     useCoins = value;
@@ -84,7 +74,7 @@ class ShopState extends ChangeNotifier {
   }
 
   CheckoutResult checkout() {
-    if (_cart.isEmpty) return (earned: 0, spent: 0, leveledUp: false);
+    if (cart.isEmpty) return (earned: 0, spent: 0, leveledUp: false);
     final before = level;
     final spent = coinsToRedeem;
     final earned = earnFor(payable);
@@ -97,9 +87,8 @@ class ShopState extends ChangeNotifier {
     }
     _earn(earned, 'Order cashback', CoinSource.checkout);
     _orders++;
-    _cart.clear();
     useCoins = false;
-    notifyListeners();
+    cartProvider.clear();
     return (earned: earned, spent: spent, leveledUp: level != before);
   }
 
@@ -136,7 +125,7 @@ class ShopState extends ChangeNotifier {
   int missionProgress(Mission m) {
     final value = switch (m.type) {
       MissionType.favorites => _favorites.length,
-      MissionType.itemsAdded => _itemsAdded,
+      MissionType.itemsAdded => cartProvider.itemsAdded,
       MissionType.orders => _orders,
       MissionType.streak => streak,
     };
@@ -166,6 +155,12 @@ class ShopState extends ChangeNotifier {
 
   static bool _sameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+
+  @override
+  void dispose() {
+    cartProvider.removeListener(notifyListeners);
+    super.dispose();
+  }
 
   void setNotifications(bool value) {
     notificationsOn = value;

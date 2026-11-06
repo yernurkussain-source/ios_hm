@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
 import 'package:final_project/data/catalog.dart';
+import 'package:final_project/main.dart';
+import 'package:final_project/state/cart_provider.dart';
 import 'package:final_project/screens/catalog_screen.dart';
 
-Widget app({bool grid = false}) => MaterialApp(
-  home: Scaffold(
-    body: CatalogScreen(grid: grid, onOpenProduct: (_) {}),
+Widget app({bool grid = false}) => ChangeNotifierProvider(
+  create: (_) => CartProvider(),
+  child: MaterialApp(
+    home: Scaffold(
+      body: CatalogScreen(grid: grid, onOpenProduct: (_) {}),
+    ),
   ),
 );
 
@@ -76,5 +82,52 @@ void main() {
     await tester.tap(find.text('Reset Catalog'));
     await tester.pumpAndSettle();
     expect(find.text(catalog.first.name), findsOneWidget);
+  });
+
+  test('catalog has 6 products', () => expect(catalog, hasLength(6)));
+
+  test('cart total, removal and clear', () {
+    final cart = CartProvider()
+      ..add(catalog[0], quantity: 2)
+      ..add(catalog[1]);
+    expect(cart.quantity, 3);
+    expect(cart.total, catalog[0].price * 2 + catalog[1].price);
+
+    cart.remove(catalog[0].id);
+    expect(cart.total, catalog[1].price);
+
+    cart.clear();
+    expect(cart.items, isEmpty);
+  });
+
+  testWidgets('cart changes on Screen 2 sync back to Screen 1', (tester) async {
+    await tester.pumpWidget(const MoodCartApp());
+    await tester.tap(find.text('Catalog'));
+    await tester.pumpAndSettle();
+
+    final addButtons = find.byTooltip('Add to Cart');
+    await tester.tap(addButtons.first);
+    await tester.pump();
+    await tester.tap(addButtons.first);
+    await tester.pump();
+    expect(find.text('2'), findsOneWidget); // live AppBar badge
+    expect(find.byTooltip('Remove from Cart'), findsNWidgets(2));
+
+    await tester.tap(find.byTooltip('Shopping cart'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Remove ${catalog.first.name}'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('1'), findsOneWidget);
+    expect(find.byTooltip('Remove from Cart'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Shopping cart'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Clear All'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Remove from Cart'), findsNothing);
   });
 }

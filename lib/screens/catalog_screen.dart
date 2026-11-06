@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../data/catalog.dart';
 import '../models/product.dart';
+import '../state/cart_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/product_image.dart';
@@ -14,8 +16,6 @@ const _categoryIcons = {
   'Home': Icons.lightbulb_rounded,
 };
 
-/// LAB 8: smart catalog — lazy list/grid, pull-to-refresh, swipe-to-delete
-/// with UNDO and an empty state. The list is local to this screen.
 class CatalogScreen extends StatefulWidget {
   final bool grid;
   final ValueChanged<Product> onOpenProduct;
@@ -34,7 +34,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   final List<Product> items = List.of(catalog);
   int _nextId = 100;
 
-  /// Simulated network request: waits 1.5 s, then puts a new item at index 0.
+
   Future<void> refresh() async {
     await Future.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
@@ -65,11 +65,11 @@ class _CatalogScreenState extends State<CatalogScreen> {
         SnackBar(
           content: Text('${product.name} deleted'),
           duration: const Duration(seconds: 4),
-          // SnackBars with an action stay forever by default; let it hide.
+
           persist: false,
           action: SnackBarAction(
             label: 'UNDO',
-            // Back to the exact place it was removed from.
+
             onPressed: () => setState(() => items.insert(index, product)),
           ),
         ),
@@ -82,7 +82,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
       ..addAll(catalog),
   );
 
-  /// Mandatory ValueKey + red right-to-left background.
   Widget swipeToDelete(Product product, Widget child) {
     return Dismissible(
       key: ValueKey(product.id),
@@ -116,14 +115,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
       16,
       MediaQuery.paddingOf(context).bottom + 24,
     );
-    // Always scrollable, so pull-to-refresh works even with a short list.
+
     const physics = AlwaysScrollableScrollPhysics();
 
     return RefreshIndicator(
       onRefresh: refresh,
       color: ink,
-      // Builders create only the visible rows/cells (lazy rendering), unlike
-      // a Column that builds every child up front.
       child: widget.grid
           ? GridView.builder(
               key: const PageStorageKey('catalogGrid'),
@@ -196,9 +193,15 @@ class _ListRow extends StatelessWidget {
           Text(' ${product.rating}'),
         ],
       ),
-      trailing: Text(
-        money(product.price),
-        style: const TextStyle(fontWeight: FontWeight.w800),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            money(product.price),
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+          _CartToggle(product),
+        ],
       ),
     );
   }
@@ -218,7 +221,6 @@ class _GridCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Expanded image soaks up the free height → no RenderFlex overflow.
             Expanded(
               child: ProductImage(
                 url: product.image,
@@ -256,18 +258,47 @@ class _GridCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    money(product.price),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          money(product.price),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                      _CartToggle(product),
+                    ],
                   ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CartToggle extends StatelessWidget {
+  final Product product;
+
+  const _CartToggle(this.product);
+
+  @override
+  Widget build(BuildContext context) {
+    final inCart = context.select<CartProvider, bool>(
+      (cart) => cart.contains(product),
+    );
+    return IconButton(
+      tooltip: inCart ? 'Remove from Cart' : 'Add to Cart',
+      visualDensity: VisualDensity.compact,
+      color: inCart ? accent : ink,
+      onPressed: () => context.read<CartProvider>().toggle(product),
+      icon: Icon(
+        inCart ? Icons.shopping_cart : Icons.add_shopping_cart_rounded,
       ),
     );
   }

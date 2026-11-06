@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../models/product.dart';
+import '../state/cart_provider.dart';
 import '../state/shop_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass.dart';
@@ -22,12 +24,18 @@ class RootScreen extends StatefulWidget {
 }
 
 class _RootScreenState extends State<RootScreen> {
-  final shop = ShopState();
+  late final ShopState shop;
   int selectedTab = 0;
 
   static const _titles = ['Discover', 'Catalog', 'Favorites', 'Profile'];
   static const _catalogTab = 1;
   bool catalogGrid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    shop = ShopState(cart: context.read<CartProvider>());
+  }
 
   @override
   void dispose() {
@@ -96,9 +104,12 @@ class _RootScreenState extends State<RootScreen> {
             IconButton.filledTonal(
               tooltip: 'Shopping cart',
               onPressed: openCart,
-              icon: Badge(
-                isLabelVisible: shop.cartQuantity > 0,
-                label: Text('${shop.cartQuantity}'),
+              icon: Consumer<CartProvider>(
+                builder: (_, cart, child) => Badge(
+                  isLabelVisible: cart.quantity > 0,
+                  label: Text('${cart.quantity}'),
+                  child: child,
+                ),
                 child: const Icon(Icons.shopping_bag_outlined),
               ),
             ),

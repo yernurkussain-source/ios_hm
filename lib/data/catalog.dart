@@ -73,10 +73,22 @@ const catalog = <Product>[
     mood: 'Cozy',
     tags: ['Lighting', 'Room', 'Cozy'],
   ),
+  Product(
+    id: 6,
+    name: 'Everyday Backpack',
+    description:
+        'A roomy, water-resistant backpack with a padded laptop pocket '
+        'for campus days and weekend trips.',
+    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=900',
+    price: 27990,
+    rating: 4.8,
+    reviews: 203,
+    category: 'Fashion',
+    mood: 'Travel',
+    tags: ['Bag', 'Laptop', 'Travel'],
+  ),
 ];
 
-/// Items created at runtime by pull-to-refresh (LAB 8), so cart and
-/// favorites can still find them by id.
 final generatedProducts = <Product>[];
 
 List<Product> get allProducts => [...catalog, ...generatedProducts];
