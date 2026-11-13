@@ -32,7 +32,7 @@ class ProductCard extends StatelessWidget {
               Hero(
                 tag: product.heroTag,
                 child: ProductImage(
-                  url: product.image,
+                  url: product.imageUrl,
                   width: 104,
                   height: 104,
                   radius: 18,
@@ -49,7 +49,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      product.name,
+                      product.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(

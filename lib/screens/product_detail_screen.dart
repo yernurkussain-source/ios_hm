@@ -34,10 +34,70 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text('$quantity × ${p.name} added to cart'),
+          content: Text('$quantity × ${p.title} added to cart'),
           duration: const Duration(seconds: 2),
         ),
       );
+  }
+
+  void share() {
+    final link = 'narxoz://store/product/${widget.product.id}';
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: surface,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Share product',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.product.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: muted),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: neutralSoft,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.link_rounded),
+                    const SizedBox(width: 10),
+                    Expanded(child: SelectableText(link)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  await Clipboard.setData(ClipboardData(text: link));
+                  if (!sheetContext.mounted) return;
+                  Navigator.pop(sheetContext);
+                  messenger.showSnackBar(
+                    const SnackBar(content: Text('Link copied')),
+                  );
+                },
+                icon: const Icon(Icons.copy_rounded),
+                label: const Text('Copy link'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -61,6 +121,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         leadingWidth: 64,
         actions: [
+          GlassIconButton(
+            tooltip: 'Share',
+            icon: Icons.ios_share_rounded,
+            onPressed: share,
+          ),
+          const SizedBox(width: 8),
           ListenableBuilder(
             listenable: widget.shop,
             builder: (context, _) {
@@ -85,15 +151,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             bottom: MediaQuery.paddingOf(context).bottom + 24,
           ),
           children: [
-            Hero(
-              tag: p.heroTag,
-              child: ProductImage(
-                url: p.image,
-                width: double.infinity,
-                height: 420,
-                radius: 0,
-              ),
-            ),
+            _Gallery(product: p),
             Transform.translate(
               offset: const Offset(0, -32),
               child: Container(
@@ -105,18 +163,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      p.category.toUpperCase(),
-                      style: const TextStyle(
-                        color: accent,
-                        fontSize: 12,
-                        letterSpacing: 1.2,
-                        fontWeight: FontWeight.w700,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: accentSoft,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        p.category.toUpperCase(),
+                        style: const TextStyle(
+                          color: accentDeep,
+                          fontSize: 12,
+                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      p.name,
+                      p.title,
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -132,7 +200,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          ' (${p.reviews} reviews)',
+                          ' (${p.reviewCount} reviews)',
                           style: const TextStyle(color: muted),
                         ),
                         const Spacer(),
@@ -249,7 +317,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // LAB 7: in-body back button → Navigator.pop.
                     OutlinedButton.icon(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.arrow_back),
@@ -298,6 +365,88 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// LAB 9: swipeable photo carousel with page counter and animated dots.
+class _Gallery extends StatefulWidget {
+  final Product product;
+
+  const _Gallery({required this.product});
+
+  @override
+  State<_Gallery> createState() => _GalleryState();
+}
+
+class _GalleryState extends State<_Gallery> {
+  int page = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final images = widget.product.gallery;
+    return SizedBox(
+      height: 420,
+      child: Stack(
+        children: [
+          PageView.builder(
+            itemCount: images.length,
+            onPageChanged: (i) => setState(() => page = i),
+            itemBuilder: (_, i) {
+              final image = ProductImage(
+                url: images[i],
+                width: double.infinity,
+                height: 420,
+                radius: 0,
+              );
+              // Only the first photo flies in from the list.
+              return i == 0
+                  ? Hero(tag: widget.product.heroTag, child: image)
+                  : image;
+            },
+          ),
+          // Bottom 48: above the content sheet that overlaps by 32.
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 48,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (var i = 0; i < images.length; i++)
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: i == page ? 22 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: i == page ? ink : Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 16,
+            bottom: 44,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${page + 1} / ${images.length}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

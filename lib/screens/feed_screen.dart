@@ -42,7 +42,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final list = catalog.where((p) {
       final moodOk = selectedMood == 'All' || p.mood == selectedMood;
       final queryOk =
-          p.name.toLowerCase().contains(q) ||
+          p.title.toLowerCase().contains(q) ||
           p.category.toLowerCase().contains(q);
       return moodOk && queryOk;
     }).toList();
@@ -298,7 +298,7 @@ class _FeaturedBanner extends StatelessWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                '${product.name} · ${money(product.price)}',
+                                '${product.title} · ${money(product.price)}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(color: Colors.white70),
@@ -317,7 +317,7 @@ class _FeaturedBanner extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
                   ProductImage(
-                    url: product.image,
+                    url: product.imageUrl,
                     width: 104,
                     height: 124,
                     radius: 20,

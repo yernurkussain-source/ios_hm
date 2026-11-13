@@ -32,8 +32,7 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreenState extends State<CatalogScreen> {
   final List<Product> items = List.of(catalog);
-  int _nextId = 100;
-
+  int _nextId = 1000;
 
   Future<void> refresh() async {
     await Future.delayed(const Duration(milliseconds: 1500));
@@ -42,12 +41,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
     final id = _nextId++;
     final product = Product(
       id: id,
-      name: 'New drop #${id - 99} · ${base.name}',
+      title: 'New drop #${id - 999} · ${base.title}',
       description: base.description,
-      image: base.image,
+      imageUrl: base.imageUrl,
       price: base.price,
       rating: base.rating,
-      reviews: 0,
+      reviewCount: 0,
       category: base.category,
       mood: base.mood,
       tags: base.tags,
@@ -63,7 +62,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text('${product.name} deleted'),
+          content: Text('${product.title} deleted'),
           duration: const Duration(seconds: 4),
 
           persist: false,
@@ -180,7 +179,7 @@ class _ListRow extends StatelessWidget {
         ),
       ),
       title: Text(
-        product.name,
+        product.title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(fontWeight: FontWeight.w700),
@@ -223,7 +222,7 @@ class _GridCard extends StatelessWidget {
           children: [
             Expanded(
               child: ProductImage(
-                url: product.image,
+                url: product.imageUrl,
                 width: double.infinity,
                 height: double.infinity,
                 radius: 0,
@@ -235,7 +234,7 @@ class _GridCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.name,
+                    product.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.w700),

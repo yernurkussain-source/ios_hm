@@ -7,6 +7,7 @@ class ProductImage extends StatelessWidget {
   final double width;
   final double height;
   final double radius;
+  final BoxFit fit;
 
   const ProductImage({
     super.key,
@@ -14,6 +15,7 @@ class ProductImage extends StatelessWidget {
     required this.width,
     required this.height,
     this.radius = 15,
+    this.fit = BoxFit.cover,
   });
 
   @override
@@ -28,24 +30,27 @@ class ProductImage extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
-      child: Image.network(
-        url,
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-        loadingBuilder: (_, child, progress) => progress == null
-            ? child
-            : Stack(
-                alignment: Alignment.center,
-                children: [
-                  placeholder,
-                  const SizedBox.square(
-                    dimension: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ],
-              ),
-        errorBuilder: (_, _, _) => placeholder,
+      child: ColoredBox(
+        color: surface,
+        child: Image.network(
+          url,
+          width: width,
+          height: height,
+          fit: fit,
+          loadingBuilder: (_, child, progress) => progress == null
+              ? child
+              : Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    placeholder,
+                    const SizedBox.square(
+                      dimension: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ],
+                ),
+          errorBuilder: (_, _, _) => placeholder,
+        ),
       ),
     );
   }

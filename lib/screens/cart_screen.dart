@@ -119,14 +119,14 @@ class _CartItem extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Row(
           children: [
-            ProductImage(url: p.image, width: 70, height: 70),
+            ProductImage(url: p.imageUrl, width: 70, height: 70),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    p.name,
+                    p.title,
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 4),
@@ -151,7 +151,7 @@ class _CartItem extends StatelessWidget {
               icon: const Icon(Icons.add_circle_outline),
             ),
             IconButton(
-              tooltip: 'Remove ${p.name}',
+              tooltip: 'Remove ${p.title}',
               visualDensity: VisualDensity.compact,
               onPressed: onRemove,
               icon: const Icon(Icons.delete_outline),

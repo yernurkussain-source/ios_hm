@@ -24,7 +24,7 @@ class FavoritesScreen extends StatelessWidget {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text('${product.name} removed from favorites'),
+          content: Text('${product.title} removed from favorites'),
           action: SnackBarAction(
             label: 'UNDO',
             onPressed: () => shop.toggleFavorite(product),

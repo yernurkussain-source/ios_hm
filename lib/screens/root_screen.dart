@@ -10,6 +10,7 @@ import '../widgets/glass.dart';
 import '../widgets/coin.dart';
 import 'cart_screen.dart';
 import 'catalog_screen.dart';
+import 'cloud_screen.dart';
 import 'coins_screen.dart';
 import 'favorites_screen.dart';
 import 'feed_screen.dart';
@@ -27,7 +28,16 @@ class _RootScreenState extends State<RootScreen> {
   late final ShopState shop;
   int selectedTab = 0;
 
-  static const _titles = ['Discover', 'Catalog', 'Favorites', 'Profile'];
+  static const _titles = [
+    'Discover',
+    'Catalog',
+    'Cloud Store',
+    'Favorites',
+    'Profile',
+  ];
+  static const _cloudTab = 2;
+
+  bool cloudOpened = false;
   static const _catalogTab = 1;
   bool catalogGrid = false;
 
@@ -45,7 +55,10 @@ class _RootScreenState extends State<RootScreen> {
 
   void selectTab(int index) {
     if (index != selectedTab) HapticFeedback.selectionClick();
-    setState(() => selectedTab = index);
+    setState(() {
+      selectedTab = index;
+      if (index == _cloudTab) cloudOpened = true;
+    });
   }
 
   Widget _tab(int index, Widget child) =>
@@ -83,7 +96,7 @@ class _RootScreenState extends State<RootScreen> {
         appBar: AppBar(
           title: Text(_titles[selectedTab]),
           actions: [
-            // LAB 8: List ↔ Grid toggle, only on the Catalog tab.
+
             if (selectedTab == _catalogTab)
               IconButton(
                 tooltip: catalogGrid ? 'List view' : 'Grid view',
@@ -125,7 +138,13 @@ class _RootScreenState extends State<RootScreen> {
               CatalogScreen(grid: catalogGrid, onOpenProduct: openProduct),
             ),
             _tab(
-              2,
+              _cloudTab,
+              cloudOpened
+                  ? CloudScreen(onOpenProduct: openProduct)
+                  : const SizedBox.shrink(),
+            ),
+            _tab(
+              3,
               FavoritesScreen(
                 shop: shop,
                 onOpenProduct: openProduct,
@@ -133,10 +152,10 @@ class _RootScreenState extends State<RootScreen> {
               ),
             ),
             _tab(
-              3,
+              4,
               ProfileScreen(
                 shop: shop,
-                onOpenFavorites: () => selectTab(2),
+                onOpenFavorites: () => selectTab(3),
                 onOpenCart: openCart,
                 onOpenCoins: openCoins,
               ),
@@ -161,6 +180,11 @@ class _RootScreenState extends State<RootScreen> {
                   icon: Icon(Icons.grid_view_outlined),
                   activeIcon: _ActivePill(icon: Icons.grid_view_rounded),
                   label: 'Catalog',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.cloud_outlined),
+                  activeIcon: _ActivePill(icon: Icons.cloud_rounded),
+                  label: 'Cloud',
                 ),
                 BottomNavigationBarItem(
                   icon: Badge(
@@ -193,7 +217,7 @@ class _ActivePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
       decoration: BoxDecoration(
         color: ink,
         borderRadius: BorderRadius.circular(16),

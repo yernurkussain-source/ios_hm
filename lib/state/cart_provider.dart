@@ -3,18 +3,12 @@ import 'package:flutter/foundation.dart';
 import '../data/catalog.dart';
 import '../models/product.dart';
 
-/// The one global cart. Lives above MaterialApp, so every route sees the same
-/// data and rebuilds on notifyListeners().
 class CartProvider extends ChangeNotifier {
   final Map<int, int> _items = {};
 
-  /// Total items ever added; the "Fill the bag" coin mission counts this.
   int itemsAdded = 0;
-
   Map<int, int> get items => Map.unmodifiable(_items);
-
   bool contains(Product product) => _items.containsKey(product.id);
-
   int get quantity => _items.values.fold(0, (sum, count) => sum + count);
 
   double get total => _items.entries.fold(

@@ -25,7 +25,7 @@ void main() {
   testWidgets('list uses ListView.separated with dividers', (tester) async {
     await tester.pumpWidget(app());
     expect(find.byType(ListView), findsOneWidget);
-    expect(find.text(catalog.first.name), findsOneWidget);
+    expect(find.text(catalog.first.title), findsOneWidget);
     expect(find.byType(Divider), findsWidgets);
   });
 
@@ -59,7 +59,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(app());
-    final second = catalog[1].name;
+    final second = catalog[1].title;
 
     await swipeAway(tester, second);
     expect(find.text(second), findsNothing);
@@ -75,13 +75,13 @@ void main() {
   ) async {
     await tester.pumpWidget(app());
     for (final p in catalog) {
-      await swipeAway(tester, p.name);
+      await swipeAway(tester, p.title);
     }
     expect(find.text('Catalog is Empty'), findsOneWidget);
 
     await tester.tap(find.text('Reset Catalog'));
     await tester.pumpAndSettle();
-    expect(find.text(catalog.first.name), findsOneWidget);
+    expect(find.text(catalog.first.title), findsOneWidget);
   });
 
   test('catalog has 6 products', () => expect(catalog, hasLength(6)));
@@ -115,7 +115,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Shopping cart'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Remove ${catalog.first.name}'));
+    await tester.tap(find.byTooltip('Remove ${catalog.first.title}'));
     await tester.pumpAndSettle();
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
