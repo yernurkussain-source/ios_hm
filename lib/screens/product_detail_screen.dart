@@ -45,7 +45,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: surface,
+      backgroundColor: context.palette.surface,
       builder: (sheetContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -62,13 +62,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 widget.product.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: muted),
+                style: TextStyle(color: context.palette.muted),
               ),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: neutralSoft,
+                  color: context.palette.neutralSoft,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -156,8 +156,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               offset: const Offset(0, -32),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                decoration: const BoxDecoration(
-                  color: canvas,
+                decoration: BoxDecoration(
+                  color: context.palette.canvas,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
                 ),
                 child: Column(
@@ -169,13 +169,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: accentSoft,
+                        color: context.palette.accentSoft,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         p.category.toUpperCase(),
-                        style: const TextStyle(
-                          color: accentDeep,
+                        style: TextStyle(
+                          color: context.palette.accentDeep,
                           fontSize: 12,
                           letterSpacing: 1.2,
                           fontWeight: FontWeight.w700,
@@ -194,20 +194,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, color: ink),
+                        Icon(Icons.star_rounded, color: context.palette.ink),
                         Text(
                           ' ${p.rating}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           ' (${p.reviewCount} reviews)',
-                          style: const TextStyle(color: muted),
+                          style: TextStyle(color: context.palette.muted),
                         ),
                         const Spacer(),
                         Text(
                           money(p.price),
-                          style: const TextStyle(
-                            color: ink,
+                          style: TextStyle(
+                            color: context.palette.ink,
                             fontSize: 23,
                             fontWeight: FontWeight.w800,
                           ),
@@ -221,7 +221,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: accentSoft,
+                        color: context.palette.accentSoft,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Row(
@@ -232,8 +232,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: Text(
                               'Earn ${widget.shop.earnFor(p.price * quantity)} '
                               'Mood Coins with this purchase',
-                              style: const TextStyle(
-                                color: accentDeep,
+                              style: TextStyle(
+                                color: context.palette.accentDeep,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -241,7 +241,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           Text(
                             '${widget.shop.level.name} '
                             '${widget.shop.level.bonus}',
-                            style: const TextStyle(color: muted, fontSize: 12),
+                            style: TextStyle(
+                              color: context.palette.muted,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -252,7 +255,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       runSpacing: 6,
                       children: [
                         Chip(
-                          avatar: const Icon(Icons.mood, size: 18, color: ink),
+                          avatar: Icon(
+                            Icons.mood,
+                            size: 18,
+                            color: context.palette.ink,
+                          ),
                           label: Text(p.mood),
                         ),
                         for (final tag in extraTags) Chip(label: Text(tag)),
@@ -269,10 +276,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     const SizedBox(height: 6),
                     Text(
                       p.description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         height: 1.5,
-                        color: Colors.black87,
+                        color: context.palette.ink,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -340,9 +347,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Total',
-                      style: TextStyle(color: muted, fontSize: 12),
+                      style: TextStyle(
+                        color: context.palette.muted,
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
                       money(p.price * quantity),
@@ -421,7 +431,7 @@ class _GalleryState extends State<_Gallery> {
                     width: i == page ? 22 : 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: i == page ? ink : Colors.white,
+                      color: i == page ? inkFixed : Colors.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

@@ -56,7 +56,7 @@ class FavoritesScreen extends StatelessWidget {
       children: [
         Text(
           '${saved.length} saved for later · swipe to remove',
-          style: const TextStyle(color: muted),
+          style: TextStyle(color: context.palette.muted),
         ),
         const SizedBox(height: 12),
         for (final product in saved)

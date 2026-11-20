@@ -45,7 +45,10 @@ class ProductCard extends StatelessWidget {
                   children: [
                     Text(
                       product.category,
-                      style: const TextStyle(color: muted, fontSize: 12),
+                      style: TextStyle(
+                        color: context.palette.muted,
+                        fontSize: 12,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -61,7 +64,11 @@ class ProductCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, size: 16, color: ink),
+                        Icon(
+                          Icons.star_rounded,
+                          size: 16,
+                          color: context.palette.ink,
+                        ),
                         Text(
                           ' ${product.rating}',
                           style: const TextStyle(
@@ -71,15 +78,18 @@ class ProductCard extends StatelessWidget {
                         ),
                         Text(
                           '  ·  ${product.mood}',
-                          style: const TextStyle(fontSize: 12, color: muted),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.palette.muted,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 10),
                     Text(
                       money(product.price),
-                      style: const TextStyle(
-                        color: ink,
+                      style: TextStyle(
+                        color: context.palette.ink,
                         fontWeight: FontWeight.w800,
                         fontSize: 17,
                         letterSpacing: -0.3,
@@ -95,7 +105,9 @@ class ProductCard extends StatelessWidget {
                       ? 'Remove from favorites'
                       : 'Add to favorites',
                   style: IconButton.styleFrom(
-                    backgroundColor: isFavorite ? accentSoft : canvas,
+                    backgroundColor: isFavorite
+                        ? context.palette.accentSoft
+                        : context.palette.canvas,
                   ),
                   onPressed: () {
                     HapticFeedback.lightImpact();
@@ -111,7 +123,7 @@ class ProductCard extends StatelessWidget {
                           : Icons.favorite_border_rounded,
                       key: ValueKey(isFavorite),
                       size: 20,
-                      color: isFavorite ? accent : ink,
+                      color: isFavorite ? accent : context.palette.ink,
                     ),
                   ),
                 ),

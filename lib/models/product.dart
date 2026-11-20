@@ -23,8 +23,6 @@ class Product {
     required this.tags,
   });
 
-  /// shortcut: fixed demo rate so API (USD) and local (₸) prices add up in
-  /// one cart; use a live exchange-rate API for real prices.
   static const kztPerUsd = 500;
 
   static const _moodByCategory = {
@@ -34,7 +32,6 @@ class Product {
     "women's clothing": 'Travel',
   };
 
-  /// LAB 9: null-safe fallbacks; `as num` accepts both 109 and 109.95.
   factory Product.fromJson(Map<String, dynamic> json) {
     final rating = json['rating'] as Map<String, dynamic>? ?? const {};
     final category = json['category'] as String? ?? 'other';
@@ -52,8 +49,6 @@ class Product {
     );
   }
 
-  /// shortcut: the API gives one photo per product, so the carousel shows it
-  /// 3 times; switch to a real image list when the backend has one.
   List<String> get gallery => List.filled(3, imageUrl);
 
   String get heroTag => 'product_image_$id';

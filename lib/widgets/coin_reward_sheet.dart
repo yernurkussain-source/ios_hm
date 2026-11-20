@@ -15,7 +15,7 @@ Future<void> showCoinReward(
   HapticFeedback.heavyImpact();
   return showModalBottomSheet<void>(
     context: context,
-    backgroundColor: surface,
+    backgroundColor: context.palette.surface,
     showDragHandle: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
@@ -111,16 +111,19 @@ class _CoinRewardSheetState extends State<_CoinRewardSheet>
               value: widget.amount,
               from: 0,
               prefix: '+',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 44,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -1.5,
-                color: ink,
+                color: context.palette.ink,
               ),
             ),
-            const Text(
+            Text(
               'Mood Coins',
-              style: TextStyle(color: muted, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: context.palette.muted,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 14),
             Text(
@@ -133,7 +136,7 @@ class _CoinRewardSheetState extends State<_CoinRewardSheet>
               Text(
                 widget.subtitle!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: muted),
+                style: TextStyle(color: context.palette.muted),
               ),
             ],
             const SizedBox(height: 22),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../state/settings_provider.dart';
 import '../state/shop_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coin.dart';
+import 'vault_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final ShopState shop;
@@ -20,6 +23,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
     return ListView(
       padding: EdgeInsets.fromLTRB(
         18,
@@ -28,24 +32,24 @@ class ProfileScreen extends StatelessWidget {
         MediaQuery.paddingOf(context).bottom + 24,
       ),
       children: [
-        const Center(
+        Center(
           child: CircleAvatar(
             radius: 44,
-            backgroundColor: ink,
-            child: Icon(Icons.person, size: 48, color: Colors.white),
+            backgroundColor: context.palette.ink,
+            child: Icon(Icons.person, size: 48, color: context.palette.canvas),
           ),
         ),
         const SizedBox(height: 12),
-        const Center(
+        Center(
           child: Text(
-            'MoodCart Shopper',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            settings.displayName,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
         ),
-        const Center(
+        Center(
           child: Text(
             'Your personalized shopping space',
-            style: TextStyle(color: muted),
+            style: TextStyle(color: context.palette.muted),
           ),
         ),
         const SizedBox(height: 22),
@@ -92,6 +96,23 @@ class ProfileScreen extends StatelessWidget {
                 onChanged: shop.setNotifications,
               ),
               const Divider(height: 1),
+              SwitchListTile(
+                secondary: const Icon(Icons.dark_mode_outlined),
+                title: const Text('Dark mode'),
+                value: settings.darkMode,
+                onChanged: settings.setDarkMode,
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.lock_outline),
+                title: const Text('Notes & Settings Vault'),
+                subtitle: const Text('Lab 11 · saved on this device'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(builder: (_) => const VaultScreen()),
+                ),
+              ),
             ],
           ),
         ),
@@ -116,14 +137,14 @@ class _StatTile extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: ink,
+                  color: context.palette.ink,
                 ),
               ),
               const SizedBox(height: 2),
-              Text(label, style: const TextStyle(color: muted)),
+              Text(label, style: TextStyle(color: context.palette.muted)),
             ],
           ),
         ),
@@ -143,7 +164,7 @@ class _LevelCard extends StatelessWidget {
     final level = shop.level;
     final next = level.next;
     return Material(
-      color: ink,
+      color: context.palette.inverse,
       borderRadius: BorderRadius.circular(24),
       clipBehavior: Clip.antiAlias,
       child: InkWell(

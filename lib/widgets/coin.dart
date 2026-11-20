@@ -91,8 +91,8 @@ class CoinPill extends StatelessWidget {
       isLabelVisible: hasNews,
       smallSize: 10,
       child: Material(
-        color: surface,
-        shape: const StadiumBorder(side: BorderSide(color: line)),
+        color: context.palette.surface,
+        shape: StadiumBorder(side: BorderSide(color: context.palette.line)),
         child: InkWell(
           customBorder: const StadiumBorder(),
           onTap: onTap,
@@ -105,10 +105,10 @@ class CoinPill extends StatelessWidget {
                 const SizedBox(width: 6),
                 AnimatedCount(
                   value: coins,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 15,
-                    color: ink,
+                    color: context.palette.ink,
                   ),
                 ),
               ],

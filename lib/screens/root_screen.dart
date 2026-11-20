@@ -96,7 +96,6 @@ class _RootScreenState extends State<RootScreen> {
         appBar: AppBar(
           title: Text(_titles[selectedTab]),
           actions: [
-
             if (selectedTab == _catalogTab)
               IconButton(
                 tooltip: catalogGrid ? 'List view' : 'Grid view',
@@ -219,10 +218,10 @@ class _ActivePill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
       decoration: BoxDecoration(
-        color: ink,
+        color: context.palette.ink,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Icon(icon, color: Colors.white),
+      child: Icon(icon, color: context.palette.canvas),
     );
   }
 }

@@ -119,7 +119,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
     return RefreshIndicator(
       onRefresh: refresh,
-      color: ink,
+      color: context.palette.ink,
       child: widget.grid
           ? GridView.builder(
               key: const PageStorageKey('catalogGrid'),
@@ -172,10 +172,10 @@ class _ListRow extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: neutralSoft,
+        backgroundColor: context.palette.neutralSoft,
         child: Icon(
           _categoryIcons[product.category] ?? Icons.shopping_bag_rounded,
-          color: ink,
+          color: context.palette.ink,
         ),
       ),
       title: Text(
@@ -188,7 +188,7 @@ class _ListRow extends StatelessWidget {
         children: [
           _Tag(product.category),
           const SizedBox(width: 8),
-          const Icon(Icons.star_rounded, size: 16, color: ink),
+          Icon(Icons.star_rounded, size: 16, color: context.palette.ink),
           Text(' ${product.rating}'),
         ],
       ),
@@ -247,7 +247,11 @@ class _GridCard extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.star_rounded, size: 14, color: ink),
+                          Icon(
+                            Icons.star_rounded,
+                            size: 14,
+                            color: context.palette.ink,
+                          ),
                           Text(
                             ' ${product.rating}',
                             style: const TextStyle(fontSize: 12),
@@ -294,7 +298,7 @@ class _CartToggle extends StatelessWidget {
     return IconButton(
       tooltip: inCart ? 'Remove from Cart' : 'Add to Cart',
       visualDensity: VisualDensity.compact,
-      color: inCart ? accent : ink,
+      color: inCart ? accent : context.palette.ink,
       onPressed: () => context.read<CartProvider>().toggle(product),
       icon: Icon(
         inCart ? Icons.shopping_cart : Icons.add_shopping_cart_rounded,
@@ -313,16 +317,16 @@ class _Tag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: accentSoft,
+        color: context.palette.accentSoft,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         text,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 11,
-          color: accentDeep,
+          color: context.palette.accentDeep,
           fontWeight: FontWeight.w600,
         ),
       ),

@@ -23,15 +23,15 @@ class ProductImage extends StatelessWidget {
     final placeholder = Container(
       width: width,
       height: height,
-      color: neutralSoft,
+      color: context.palette.neutralSoft,
       alignment: Alignment.center,
-      child: const Icon(Icons.image_outlined, size: 40, color: muted),
+      child: Icon(Icons.image_outlined, size: 40, color: context.palette.muted),
     );
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: ColoredBox(
-        color: surface,
+        color: context.palette.surface,
         child: Image.network(
           url,
           width: width,

@@ -6,7 +6,6 @@ import '../services/product_api.dart';
 import '../theme/app_theme.dart';
 import '../widgets/product_image.dart';
 
-
 class CloudScreen extends StatefulWidget {
   final ValueChanged<Product> onOpenProduct;
   final ProductApi? api;
@@ -58,7 +57,9 @@ class _CloudScreenState extends State<CloudScreen> {
   Widget build(BuildContext context) {
     final items = products;
     if (items == null && loading) {
-      return const Center(child: CircularProgressIndicator(color: ink));
+      return Center(
+        child: CircularProgressIndicator(color: context.palette.ink),
+      );
     }
 
     if (items == null) {
@@ -68,10 +69,9 @@ class _CloudScreenState extends State<CloudScreen> {
       );
     }
 
-
     return RefreshIndicator(
       onRefresh: load,
-      color: ink,
+      color: context.palette.ink,
       child: ListView.separated(
         key: const PageStorageKey('cloudList'),
         physics: const AlwaysScrollableScrollPhysics(),
@@ -131,10 +131,17 @@ class _ProductRow extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, size: 16, color: ink),
+                        Icon(
+                          Icons.star_rounded,
+                          size: 16,
+                          color: context.palette.ink,
+                        ),
                         Text(
                           ' ${product.rating} (${product.reviewCount})',
-                          style: const TextStyle(fontSize: 12, color: muted),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.palette.muted,
+                          ),
                         ),
                         const Spacer(),
                         Text(
@@ -168,7 +175,11 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 64, color: muted),
+            Icon(
+              Icons.wifi_off_rounded,
+              size: 64,
+              color: context.palette.muted,
+            ),
             const SizedBox(height: 16),
             const Text(
               'Could not load products',
@@ -178,7 +189,7 @@ class _ErrorView extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: muted),
+              style: TextStyle(color: context.palette.muted),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(

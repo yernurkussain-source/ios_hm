@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import '../models/product.dart';
 
-
 class ApiException implements Exception {
   final String message;
 
@@ -45,12 +44,10 @@ class ProductApi {
     } on TimeoutException {
       throw const ApiException('The server took too long (10 s timeout).');
     } on http.ClientException {
-      // Airplane mode / no Wi-Fi ends up here (SocketException is wrapped).
       throw const ApiException('No internet connection.');
     } on FormatException {
       throw const ApiException('The server sent invalid data.');
     } on TypeError {
-      // JSON was valid but not the shape we expect (e.g. object, not list).
       throw const ApiException('The server sent invalid data.');
     }
   }

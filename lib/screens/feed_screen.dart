@@ -112,7 +112,9 @@ class _FeedScreenState extends State<FeedScreen> {
                     avatar: Icon(
                       _moodIcons[mood],
                       size: 18,
-                      color: selectedMood == mood ? Colors.white : ink,
+                      color: selectedMood == mood
+                          ? context.palette.canvas
+                          : context.palette.ink,
                     ),
                     label: Text(mood),
                     selected: selectedMood == mood,
@@ -174,7 +176,7 @@ class _SectionHeader extends StatelessWidget {
         ),
         const Spacer(),
         if (trailing != null)
-          Text(trailing!, style: const TextStyle(color: muted)),
+          Text(trailing!, style: TextStyle(color: context.palette.muted)),
       ],
     );
   }
@@ -192,7 +194,7 @@ class _SortButton extends StatelessWidget {
       tooltip: 'Sort',
       initialValue: value,
       onSelected: onSelected,
-      color: surface,
+      color: context.palette.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       itemBuilder: (_) => const [
         PopupMenuItem(value: SortOrder.popular, child: Text('Most popular')),
@@ -208,8 +210,11 @@ class _SortButton extends StatelessWidget {
       child: Container(
         width: 54,
         height: 54,
-        decoration: const BoxDecoration(color: ink, shape: BoxShape.circle),
-        child: const Icon(Icons.tune_rounded, color: Colors.white),
+        decoration: BoxDecoration(
+          color: context.palette.ink,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(Icons.tune_rounded, color: context.palette.canvas),
       ),
     );
   }
@@ -231,7 +236,7 @@ class _FeaturedBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: ink,
+      color: context.palette.inverse,
       borderRadius: BorderRadius.circular(28),
       clipBehavior: Clip.antiAlias,
       child: InkWell(

@@ -79,13 +79,13 @@ class CoinsScreen extends StatelessWidget {
             const _Header('History'),
             const SizedBox(height: 12),
             if (shop.history.isEmpty)
-              const Card(
+              Card(
                 child: Padding(
                   padding: EdgeInsets.all(20),
                   child: Text(
                     'No coins yet — start with today\'s check-in!',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: muted),
+                    style: TextStyle(color: context.palette.muted),
                   ),
                 ),
               )
@@ -159,12 +159,15 @@ class _BalanceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: ink,
+        color: context.palette.inverse,
         borderRadius: BorderRadius.circular(28),
         gradient: RadialGradient(
           center: const Alignment(1.1, -1.1),
           radius: 1.2,
-          colors: [level.color.withValues(alpha: 0.45), ink],
+          colors: [
+            level.color.withValues(alpha: 0.45),
+            context.palette.inverse,
+          ],
         ),
       ),
       child: Column(
@@ -189,13 +192,13 @@ class _BalanceCard extends StatelessWidget {
                     const Icon(
                       Icons.workspace_premium_rounded,
                       size: 16,
-                      color: ink,
+                      color: inkFixed,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       level.name.toUpperCase(),
                       style: const TextStyle(
-                        color: ink,
+                        color: inkFixed,
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
@@ -356,12 +359,20 @@ class _DayDot extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: collected ? ink : (isNext ? accentSoft : neutralSoft),
+            color: collected
+                ? context.palette.ink
+                : (isNext
+                      ? context.palette.accentSoft
+                      : context.palette.neutralSoft),
             border: isNext ? Border.all(color: accent, width: 2) : null,
           ),
           alignment: Alignment.center,
           child: collected
-              ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
+              ? Icon(
+                  Icons.check_rounded,
+                  color: context.palette.canvas,
+                  size: 18,
+                )
               : isJackpot
               ? const CoinIcon(size: 26)
               : Text(
@@ -369,7 +380,9 @@ class _DayDot extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: isNext ? accentDeep : muted,
+                    color: isNext
+                        ? context.palette.accentDeep
+                        : context.palette.muted,
                   ),
                 ),
         ),
@@ -378,7 +391,9 @@ class _DayDot extends StatelessWidget {
           isJackpot ? '+$reward' : 'Day $day',
           style: TextStyle(
             fontSize: 11,
-            color: isJackpot ? accentDeep : muted,
+            color: isJackpot
+                ? context.palette.accentDeep
+                : context.palette.muted,
             fontWeight: isJackpot ? FontWeight.w800 : FontWeight.w500,
           ),
         ),
@@ -412,10 +427,15 @@ class _MissionTile extends StatelessWidget {
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: claimed ? neutralSoft : accentSoft,
+                color: claimed
+                    ? context.palette.neutralSoft
+                    : context.palette.accentSoft,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(mission.icon, color: claimed ? muted : accent),
+              child: Icon(
+                mission.icon,
+                color: claimed ? context.palette.muted : accent,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -429,7 +449,10 @@ class _MissionTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     mission.subtitle,
-                    style: const TextStyle(color: muted, fontSize: 12),
+                    style: TextStyle(
+                      color: context.palette.muted,
+                      fontSize: 12,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -440,15 +463,20 @@ class _MissionTile extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: progress / mission.target,
                             minHeight: 6,
-                            color: claimed ? muted : ink,
-                            backgroundColor: neutralSoft,
+                            color: claimed
+                                ? context.palette.muted
+                                : context.palette.ink,
+                            backgroundColor: context.palette.neutralSoft,
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '$progress/${mission.target}',
-                        style: const TextStyle(fontSize: 12, color: muted),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: context.palette.muted,
+                        ),
                       ),
                     ],
                   ),
@@ -457,7 +485,7 @@ class _MissionTile extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             if (claimed)
-              const Icon(Icons.verified_rounded, color: muted)
+              Icon(Icons.verified_rounded, color: context.palette.muted)
             else if (ready)
               FilledButton(
                 style: FilledButton.styleFrom(
@@ -532,7 +560,10 @@ class _HowItWorks extends StatelessWidget {
                           ),
                           Text(
                             l.bonus,
-                            style: const TextStyle(fontSize: 11, color: muted),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: context.palette.muted,
+                            ),
                           ),
                         ],
                       ),
@@ -561,8 +592,14 @@ class _HistoryTile extends StatelessWidget {
         ' · ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: positive ? accentSoft : neutralSoft,
-        child: Icon(entry.icon, size: 20, color: positive ? accent : ink),
+        backgroundColor: positive
+            ? context.palette.accentSoft
+            : context.palette.neutralSoft,
+        child: Icon(
+          entry.icon,
+          size: 20,
+          color: positive ? accent : context.palette.ink,
+        ),
       ),
       title: Text(entry.title, style: const TextStyle(fontSize: 14)),
       subtitle: Text(time, style: const TextStyle(fontSize: 12)),
@@ -571,7 +608,7 @@ class _HistoryTile extends StatelessWidget {
         style: TextStyle(
           fontWeight: FontWeight.w800,
           fontSize: 16,
-          color: positive ? const Color(0xFF1E9E5A) : ink,
+          color: positive ? const Color(0xFF1E9E5A) : context.palette.ink,
         ),
       ),
     );

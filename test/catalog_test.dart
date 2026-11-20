@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 import 'package:final_project/data/catalog.dart';
-import 'package:final_project/main.dart';
 import 'package:final_project/state/cart_provider.dart';
+
+import 'widget_test.dart' show freshApp;
+
 import 'package:final_project/screens/catalog_screen.dart';
 
 Widget app({bool grid = false}) => ChangeNotifierProvider(
@@ -101,7 +103,7 @@ void main() {
   });
 
   testWidgets('cart changes on Screen 2 sync back to Screen 1', (tester) async {
-    await tester.pumpWidget(const MoodCartApp());
+    await tester.pumpWidget(await freshApp());
     await tester.tap(find.text('Catalog'));
     await tester.pumpAndSettle();
 

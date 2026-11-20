@@ -28,8 +28,8 @@ class EmptyState extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(22),
-              decoration: const BoxDecoration(
-                color: accentSoft,
+              decoration: BoxDecoration(
+                color: context.palette.accentSoft,
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 52, color: accent),
@@ -43,7 +43,7 @@ class EmptyState extends StatelessWidget {
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: muted),
+              style: TextStyle(color: context.palette.muted),
             ),
             if (actionLabel != null) ...[
               const SizedBox(height: 18),

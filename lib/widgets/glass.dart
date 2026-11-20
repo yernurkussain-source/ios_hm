@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
+
 class Glass extends StatelessWidget {
   final Widget child;
   final BorderRadius borderRadius;
@@ -33,9 +35,11 @@ class Glass extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: opacity),
+              color: context.palette.surface.withValues(alpha: opacity),
               borderRadius: borderRadius,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.6)),
+              border: Border.all(
+                color: context.palette.surface.withValues(alpha: 0.6),
+              ),
             ),
             child: child,
           ),
@@ -66,7 +70,7 @@ class GlassIconButton extends StatelessWidget {
       child: IconButton(
         tooltip: tooltip,
         onPressed: onPressed,
-        icon: Icon(icon, size: 20, color: color ?? Colors.black87),
+        icon: Icon(icon, size: 20, color: color ?? context.palette.ink),
       ),
     );
   }

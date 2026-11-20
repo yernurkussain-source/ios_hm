@@ -85,10 +85,10 @@ class CartScreen extends StatelessWidget {
                 child: Text('Pay ${money(shop.payable)} · demo'),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Demo only: no payment is processed.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: muted),
+                style: TextStyle(color: context.palette.muted),
               ),
             ],
           );
@@ -130,7 +130,10 @@ class _CartItem extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 4),
-                  Text(money(p.price), style: const TextStyle(color: muted)),
+                  Text(
+                    money(p.price),
+                    style: TextStyle(color: context.palette.muted),
+                  ),
                 ],
               ),
             ),
@@ -203,7 +206,7 @@ class _Summary extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Text(label, style: const TextStyle(color: muted)),
+          Text(label, style: TextStyle(color: context.palette.muted)),
           const Spacer(),
           Text(value, style: style),
         ],
@@ -239,7 +242,7 @@ class _Summary extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: accentSoft,
+                color: context.palette.accentSoft,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
@@ -250,8 +253,8 @@ class _Summary extends StatelessWidget {
                     child: Text(
                       'You will earn ${shop.earnFor(shop.payable)} coins '
                       '(${shop.level.name} ${shop.level.bonus})',
-                      style: const TextStyle(
-                        color: accentDeep,
+                      style: TextStyle(
+                        color: context.palette.accentDeep,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

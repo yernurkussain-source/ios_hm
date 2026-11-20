@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:final_project/main.dart';
 import 'package:final_project/screens/product_detail_screen.dart';
@@ -18,11 +19,17 @@ Future<void> openProduct(WidgetTester tester, String name) async {
   await tester.pumpAndSettle();
 }
 
+/// In-memory SharedPreferences, like a fresh install.
+Future<MoodCartApp> freshApp() async {
+  SharedPreferences.setMockInitialValues({});
+  return MoodCartApp(prefs: await SharedPreferences.getInstance());
+}
+
 void main() {
   testWidgets('Root screen shows search, bottom navigation and 3 tabs', (
     tester,
   ) async {
-    await tester.pumpWidget(const MoodCartApp());
+    await tester.pumpWidget(await freshApp());
 
     expect(find.byType(BottomNavigationBar), findsOneWidget);
     expect(find.text('Feed'), findsOneWidget);
@@ -34,7 +41,7 @@ void main() {
   testWidgets('Tapping a product opens detail with full data, back pops', (
     tester,
   ) async {
-    await tester.pumpWidget(const MoodCartApp());
+    await tester.pumpWidget(await freshApp());
     await openProduct(tester, 'Focus Headphones');
 
     final detailList = find
@@ -72,7 +79,7 @@ void main() {
   testWidgets('Favorite added on detail survives pop and shows in tab 2', (
     tester,
   ) async {
-    await tester.pumpWidget(const MoodCartApp());
+    await tester.pumpWidget(await freshApp());
     await openProduct(tester, 'Focus Headphones');
 
     await tester.tap(find.byTooltip('Add to favorites'));
