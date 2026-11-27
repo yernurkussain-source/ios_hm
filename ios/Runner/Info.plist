@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>MoodCart uses the camera to take photos for your Photo Diary.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MoodCart opens your photo library so you can add pictures to your Photo Diary.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>MoodCart tags Photo Diary entries with the place where the photo was taken.</string>
 </dict>
 </plist>

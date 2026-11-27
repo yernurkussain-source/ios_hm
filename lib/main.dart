@@ -9,6 +9,7 @@ import 'blocs/cart_bloc.dart';
 import 'screens/login_screen.dart';
 import 'services/user_repository.dart';
 import 'state/cart_provider.dart';
+import 'state/diary_provider.dart';
 import 'state/notes_provider.dart';
 import 'state/settings_provider.dart';
 import 'theme/app_theme.dart';
@@ -43,6 +44,7 @@ class MoodCartApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartProvider(prefs)),
         ChangeNotifierProvider(create: (_) => SettingsProvider(prefs)),
         ChangeNotifierProvider(create: (_) => NotesProvider(prefs)),
+        ChangeNotifierProvider(create: (_) => DiaryProvider(prefs)),
         BlocProvider(create: (_) => AuthCubit(users: users)),
         BlocProvider(
           create: (context) => CartBloc(context.read<CartProvider>()),

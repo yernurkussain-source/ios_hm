@@ -8,6 +8,7 @@ import '../state/shop_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coin.dart';
 import 'login_screen.dart';
+import 'photo_diary_screen.dart';
 import 'vault_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -118,6 +119,19 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute<void>(builder: (_) => const VaultScreen()),
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text('Photo Diary'),
+                subtitle: const Text('Lab 13 · camera + GPS'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (_) => const PhotoDiaryScreen(),
+                  ),
                 ),
               ),
               const Divider(height: 1),
