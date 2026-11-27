@@ -39,6 +39,20 @@ class CoinEntry {
 
   const CoinEntry(this.title, this.amount, this.source, this.date);
 
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'amount': amount,
+    'source': source.name,
+    'date': date.toIso8601String(),
+  };
+
+  factory CoinEntry.fromJson(Map<String, dynamic> json) => CoinEntry(
+    json['title'] as String? ?? '',
+    (json['amount'] as num?)?.toInt() ?? 0,
+    CoinSource.values.asNameMap()[json['source']] ?? CoinSource.checkout,
+    DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime(2000),
+  );
+
   IconData get icon => switch (source) {
     CoinSource.checkout => Icons.shopping_bag_rounded,
     CoinSource.checkIn => Icons.calendar_today_rounded,

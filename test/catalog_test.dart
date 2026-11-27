@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:final_project/blocs/cart_bloc.dart';
 import 'package:final_project/data/catalog.dart';
 import 'package:final_project/state/cart_provider.dart';
 
-import 'widget_test.dart' show freshApp;
+import 'widget_test.dart' show freshApp, pumpSignedIn;
 
 import 'package:final_project/screens/catalog_screen.dart';
 
-Widget app({bool grid = false}) => ChangeNotifierProvider(
-  create: (_) => CartProvider(),
+Widget app({bool grid = false}) => BlocProvider(
+  create: (_) => CartBloc(CartProvider()),
   child: MaterialApp(
     home: Scaffold(
       body: CatalogScreen(grid: grid, onOpenProduct: (_) {}),
@@ -103,9 +104,7 @@ void main() {
   });
 
   testWidgets('cart changes on Screen 2 sync back to Screen 1', (tester) async {
-    await tester.pumpWidget(await freshApp());
-    await tester.tap(find.text('Catalog'));
-    await tester.pumpAndSettle();
+    await pumpSignedIn(tester, await freshApp(), tab: 'Catalog');
 
     final addButtons = find.byTooltip('Add to Cart');
     await tester.tap(addButtons.first);

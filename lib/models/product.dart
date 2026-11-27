@@ -49,6 +49,17 @@ class Product {
     );
   }
 
+  /// Same shape as the API, so `Product.fromJson(p.toJson())` round-trips.
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'description': description,
+    'image': imageUrl,
+    'price': price / kztPerUsd,
+    'category': category,
+    'rating': {'rate': rating, 'count': reviewCount},
+  };
+
   List<String> get gallery => List.filled(3, imageUrl);
 
   String get heroTag => 'product_image_$id';

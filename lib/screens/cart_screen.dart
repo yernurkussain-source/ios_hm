@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../blocs/cart_bloc.dart';
+import '../blocs/cart_event.dart';
+import '../blocs/cart_state.dart';
 import '../data/catalog.dart';
-import '../state/cart_provider.dart';
 import '../state/shop_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coin.dart';
@@ -38,61 +40,67 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = context.watch<CartProvider>();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Cart'),
-        actions: [
-          if (cart.items.isNotEmpty)
-            TextButton(onPressed: cart.clear, child: const Text('Clear All')),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: ListenableBuilder(
-        listenable: shop,
-        builder: (context, _) {
-          final entries = cart.items.entries.toList();
-          if (entries.isEmpty) {
-            return EmptyState(
-              icon: Icons.shopping_bag_outlined,
-              title: 'Your cart is empty',
-              subtitle: 'Explore the Feed and add something you like.',
-              actionLabel: 'Continue shopping',
-              onAction: () => Navigator.pop(context),
-            );
-          }
+    final bloc = context.read<CartBloc>();
+    return BlocBuilder<CartBloc, CartState>(
+      builder: (context, cart) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Your Cart'),
+          actions: [
+            if (cart.items.isNotEmpty)
+              TextButton(
+                onPressed: () => bloc.add(const ClearCartEvent()),
+                child: const Text('Clear All'),
+              ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: ListenableBuilder(
+          listenable: shop,
+          builder: (context, _) {
+            final entries = cart.items.entries.toList();
+            if (entries.isEmpty) {
+              return EmptyState(
+                icon: Icons.shopping_bag_outlined,
+                title: 'Your cart is empty',
+                subtitle: 'Explore the Feed and add something you like.',
+                actionLabel: 'Continue shopping',
+                onAction: () => Navigator.pop(context),
+              );
+            }
 
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              for (final item in entries)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _CartItem(
-                    productId: item.key,
-                    quantity: item.value,
-                    onChange: (diff) => cart.changeQuantity(item.key, diff),
-                    onRemove: () => cart.remove(item.key),
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                for (final item in entries)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _CartItem(
+                      productId: item.key,
+                      quantity: item.value,
+                      onChange: (diff) =>
+                          bloc.add(ChangeQuantityEvent(item.key, diff)),
+                      onRemove: () => bloc.add(RemoveProductEvent(item.key)),
+                    ),
                   ),
+                const SizedBox(height: 8),
+                _CoinsSwitch(shop: shop),
+                const SizedBox(height: 12),
+                _Summary(shop: shop, cart: cart),
+                const SizedBox(height: 14),
+                FilledButton(
+                  onPressed: () => checkout(context),
+                  child: Text('Pay ${money(shop.payable)} · demo'),
                 ),
-              const SizedBox(height: 8),
-              _CoinsSwitch(shop: shop),
-              const SizedBox(height: 12),
-              _Summary(shop: shop),
-              const SizedBox(height: 14),
-              FilledButton(
-                onPressed: () => checkout(context),
-                child: Text('Pay ${money(shop.payable)} · demo'),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Demo only: no payment is processed.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: context.palette.muted),
-              ),
-            ],
-          );
-        },
+                const SizedBox(height: 8),
+                Text(
+                  'Demo only: no payment is processed.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: context.palette.muted),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -197,8 +205,9 @@ class _CoinsSwitch extends StatelessWidget {
 
 class _Summary extends StatelessWidget {
   final ShopState shop;
+  final CartState cart;
 
-  const _Summary({required this.shop});
+  const _Summary({required this.shop, required this.cart});
 
   @override
   Widget build(BuildContext context) {
@@ -219,9 +228,9 @@ class _Summary extends StatelessWidget {
         child: Column(
           children: [
             row(
-              'Subtotal · ${shop.cartQuantity} '
-              '${shop.cartQuantity == 1 ? 'item' : 'items'}',
-              money(shop.cartTotal),
+              'Subtotal · ${cart.count} '
+              '${cart.count == 1 ? 'item' : 'items'}',
+              money(cart.totalPrice),
             ),
             if (shop.coinDiscount > 0)
               row(

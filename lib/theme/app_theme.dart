@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 
 const accent = Color(0xFFFF5A2C);
 
-/// Stays dark in both themes (text on gold badges, dots over photos).
 const inkFixed = Color(0xFF141416);
 
-/// LAB 11: light and dark colour sets. Widgets read the active one with
-/// `context.palette`, so the whole app switches when the theme changes.
 class AppPalette extends ThemeExtension<AppPalette> {
   final Color ink;
   final Color canvas;
@@ -16,8 +13,6 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color neutralSoft;
   final Color accentSoft;
   final Color accentDeep;
-
-  /// Background of the "hero" dark cards that carry white text.
   final Color inverse;
 
   const AppPalette({
@@ -78,7 +73,6 @@ class AppPalette extends ThemeExtension<AppPalette> {
 }
 
 extension AppPaletteX on BuildContext {
-  /// Falls back to light so widgets also work under a plain MaterialApp.
   AppPalette get palette =>
       Theme.of(this).extension<AppPalette>() ?? AppPalette.light;
 }

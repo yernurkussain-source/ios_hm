@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/note_item.dart';
 
-/// LAB 11: the whole note list is saved as one JSON string.
 class NotesProvider extends ChangeNotifier {
   static const notesKey = 'notes_items';
 
@@ -25,7 +24,7 @@ class NotesProvider extends ChangeNotifier {
           .map((e) => NoteItem.fromJson(e as Map<String, dynamic>))
           .toList();
     } on FormatException {
-      return []; // corrupted data: start empty instead of crashing
+      return [];
     } on TypeError {
       return [];
     }
@@ -40,7 +39,7 @@ class NotesProvider extends ChangeNotifier {
   Future<void> add(String title, {DateTime? now}) {
     final time = now ?? DateTime.now();
     _notes.insert(
-      0, // prepend: newest on top
+      0,
       NoteItem(
         id: time.microsecondsSinceEpoch.toString(),
         title: title.trim(),

@@ -35,9 +35,7 @@ class _CloudScreenState extends State<CloudScreen> {
     });
     try {
       final result = await api.fetchProducts();
-      for (final p in result) {
-        if (!allProducts.any((e) => e.id == p.id)) generatedProducts.add(p);
-      }
+      registerProducts(result);
       if (!mounted) return;
       setState(() => products = result);
     } on ApiException catch (e) {

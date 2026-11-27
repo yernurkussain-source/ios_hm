@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/catalog.dart';
 import '../models/coins.dart';
@@ -10,13 +12,17 @@ import 'cart_provider.dart';
 typedef CheckoutResult = ({int earned, int spent, bool leveledUp});
 
 class ShopState extends ChangeNotifier {
-  ShopState({DateTime Function()? clock, CartProvider? cart})
+  ShopState({DateTime Function()? clock, CartProvider? cart, this._prefs})
     : _now = clock ?? DateTime.now,
       cartProvider = cart ?? CartProvider() {
+    _load();
     cartProvider.addListener(notifyListeners);
   }
 
+  static const stateKey = 'shop_state';
+
   final DateTime Function() _now;
+  final SharedPreferences? _prefs;
   final CartProvider cartProvider;
   final Set<int> _favorites = {};
   bool notificationsOn = true;
@@ -151,6 +157,64 @@ class ShopState extends ChangeNotifier {
     coins += amount;
     lifetimeCoins += amount;
     history.insert(0, CoinEntry(title, amount, source, _now()));
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    _prefs?.setString(stateKey, jsonEncode(_toJson()));
+  }
+
+  Map<String, dynamic> _toJson() => {
+    'coins': coins,
+    'lifetimeCoins': lifetimeCoins,
+    'streak': streak,
+    'lastCheckIn': _lastCheckIn?.toIso8601String(),
+    'orders': _orders,
+    'itemsAdded': cartProvider.itemsAdded,
+    'notificationsOn': notificationsOn,
+    'claimedMissions': _claimedMissions.toList(),
+    'favorites': _favorites.toList(),
+    'favoriteProducts': extraProductsJson(_favorites),
+    'history': history.map((e) => e.toJson()).toList(),
+  };
+
+  void _load() {
+    final raw = _prefs?.getString(stateKey);
+    if (raw == null) return;
+    try {
+      final j = jsonDecode(raw) as Map<String, dynamic>;
+      registerProducts(
+        (j['favoriteProducts'] as List<dynamic>? ?? []).map(
+          (e) => Product.fromJson(e as Map<String, dynamic>),
+        ),
+      );
+      coins = (j['coins'] as num?)?.toInt() ?? 0;
+      lifetimeCoins = (j['lifetimeCoins'] as num?)?.toInt() ?? 0;
+      streak = (j['streak'] as num?)?.toInt() ?? 0;
+      _lastCheckIn = DateTime.tryParse(j['lastCheckIn'] as String? ?? '');
+      _orders = (j['orders'] as num?)?.toInt() ?? 0;
+      cartProvider.itemsAdded = (j['itemsAdded'] as num?)?.toInt() ?? 0;
+      notificationsOn = j['notificationsOn'] as bool? ?? true;
+      _claimedMissions.addAll(
+        (j['claimedMissions'] as List<dynamic>? ?? []).cast<String>(),
+      );
+      final known = allProducts.map((p) => p.id).toSet();
+      _favorites.addAll(
+        (j['favorites'] as List<dynamic>? ?? [])
+            .map((e) => (e as num).toInt())
+            .where(known.contains),
+      );
+      history.addAll(
+        (j['history'] as List<dynamic>? ?? []).map(
+          (e) => CoinEntry.fromJson(e as Map<String, dynamic>),
+        ),
+      );
+    } on FormatException {
+      return;
+    } on TypeError {
+      return;
+    }
   }
 
   static bool _sameDay(DateTime a, DateTime b) =>

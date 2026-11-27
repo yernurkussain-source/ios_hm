@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../blocs/cart_bloc.dart';
+import '../blocs/cart_event.dart';
+import '../blocs/cart_state.dart';
 import '../data/catalog.dart';
 import '../models/product.dart';
-import '../state/cart_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/product_image.dart';
@@ -292,16 +294,18 @@ class _CartToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inCart = context.select<CartProvider, bool>(
-      (cart) => cart.contains(product),
-    );
-    return IconButton(
-      tooltip: inCart ? 'Remove from Cart' : 'Add to Cart',
-      visualDensity: VisualDensity.compact,
-      color: inCart ? accent : context.palette.ink,
-      onPressed: () => context.read<CartProvider>().toggle(product),
-      icon: Icon(
-        inCart ? Icons.shopping_cart : Icons.add_shopping_cart_rounded,
+    return BlocSelector<CartBloc, CartState, bool>(
+      selector: (cart) => cart.items.containsKey(product.id),
+      builder: (context, inCart) => IconButton(
+        tooltip: inCart ? 'Remove from Cart' : 'Add to Cart',
+        visualDensity: VisualDensity.compact,
+        color: inCart ? accent : context.palette.ink,
+        onPressed: () => context.read<CartBloc>().add(
+          inCart ? RemoveProductEvent(product.id) : AddProductEvent(product),
+        ),
+        icon: Icon(
+          inCart ? Icons.shopping_cart : Icons.add_shopping_cart_rounded,
+        ),
       ),
     );
   }

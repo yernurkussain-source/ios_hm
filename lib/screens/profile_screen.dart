@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../blocs/auth_cubit.dart';
+import '../blocs/auth_state.dart';
 import '../state/settings_provider.dart';
 import '../state/shop_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coin.dart';
+import 'login_screen.dart';
 import 'vault_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -47,9 +50,13 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         Center(
-          child: Text(
-            'Your personalized shopping space',
-            style: TextStyle(color: context.palette.muted),
+          child: BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, auth) => Text(
+              auth is AuthSuccess
+                  ? auth.email
+                  : 'Your personalized shopping space',
+              style: TextStyle(color: context.palette.muted),
+            ),
           ),
         ),
         const SizedBox(height: 22),
@@ -112,6 +119,24 @@ class ProfileScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute<void>(builder: (_) => const VaultScreen()),
                 ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.logout, color: accent),
+                title: const Text(
+                  'Log out',
+                  style: TextStyle(color: accent, fontWeight: FontWeight.w600),
+                ),
+                onTap: () {
+                  context.read<AuthCubit>().logout();
+                  // Back to login and drop every screen behind it.
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const LoginScreen(),
+                    ),
+                    (_) => false,
+                  );
+                },
               ),
             ],
           ),

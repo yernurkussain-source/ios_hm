@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../models/product.dart';
 
 const moods = ['All', 'Study', 'Gym', 'Travel', 'Cozy'];
@@ -96,6 +98,35 @@ const catalog = <Product>[
 final generatedProducts = <Product>[];
 
 List<Product> get allProducts => [...catalog, ...generatedProducts];
+
+void registerProducts(Iterable<Product> products) {
+  for (final p in products) {
+    if (!allProducts.any((e) => e.id == p.id)) generatedProducts.add(p);
+  }
+}
+
+/// Full JSON of the non-catalog products among [ids] (API / pull-to-refresh
+/// items), so they can be restored after a cold start.
+List<Map<String, dynamic>> extraProductsJson(Iterable<int> ids) => [
+  for (final id in ids)
+    if (!catalog.any((p) => p.id == id)) productById(id).toJson(),
+];
+
+/// Reads what [extraProductsJson] saved; bad data is ignored.
+void registerProductsJson(String? raw) {
+  if (raw == null) return;
+  try {
+    registerProducts(
+      (jsonDecode(raw) as List<dynamic>).map(
+        (e) => Product.fromJson(e as Map<String, dynamic>),
+      ),
+    );
+  } on FormatException {
+    return;
+  } on TypeError {
+    return;
+  }
+}
 
 Product productById(int id) => allProducts.firstWhere((p) => p.id == id);
 
