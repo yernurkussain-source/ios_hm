@@ -31,8 +31,17 @@ class DiaryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> add(DiaryEntry entry) async {
+  Future<void> add(DiaryEntry entry) {
     _entries.insert(0, entry); // newest first
+    return _save();
+  }
+
+  Future<void> delete(String id) {
+    _entries.removeWhere((e) => e.id == id);
+    return _save();
+  }
+
+  Future<void> _save() async {
     notifyListeners();
     await _prefs.setString(
       diaryKey,

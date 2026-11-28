@@ -15,6 +15,7 @@ Future<void> showCoinReward(
   HapticFeedback.heavyImpact();
   return showModalBottomSheet<void>(
     context: context,
+    isScrollControlled: true,
     backgroundColor: context.palette.surface,
     showDragHandle: true,
     shape: const RoundedRectangleBorder(
@@ -56,7 +57,7 @@ class _CoinRewardSheetState extends State<_CoinRewardSheet>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,

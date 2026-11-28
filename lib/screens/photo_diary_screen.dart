@@ -229,6 +229,38 @@ class _PhotoDiaryScreenState extends State<PhotoDiaryScreen> {
     toast('Saved to diary');
   }
 
+  Future<void> deleteEntry(DiaryEntry entry) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: const Text('Delete this entry?'),
+        content: Text('"${entry.caption}" and its photo will be removed.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    await context.read<DiaryProvider>().delete(entry.id);
+    // Free the space too; the copy lives in our own folder.
+    if (!kIsWeb) {
+      try {
+        await File(entry.photoPath).delete();
+      } on FileSystemException {
+        // Already gone: nothing to clean up.
+      }
+    }
+    if (mounted) toast('Entry deleted');
+  }
+
   @override
   Widget build(BuildContext context) {
     final entries = context.watch<DiaryProvider>().entries;
@@ -264,7 +296,29 @@ class _PhotoDiaryScreenState extends State<PhotoDiaryScreen> {
                           ),
                         ],
                       )
-                    : LocalImage(photoPath!, fit: BoxFit.cover),
+                    : Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          LocalImage(photoPath!, fit: BoxFit.cover),
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: IconButton.filled(
+                              tooltip: 'Remove photo',
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.black54,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: () => setState(() {
+                                photoPath = null;
+                                position = null;
+                                takenAt = null;
+                              }),
+                              icon: const Icon(Icons.close),
+                            ),
+                          ),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -409,6 +463,11 @@ class _PhotoDiaryScreenState extends State<PhotoDiaryScreen> {
                     '${DiaryEntry.formatTime(e.timestamp)}',
                   ),
                   isThreeLine: true,
+                  trailing: IconButton(
+                    tooltip: 'Delete entry',
+                    onPressed: () => deleteEntry(e),
+                    icon: const Icon(Icons.delete_outline),
+                  ),
                 ),
               ),
             ),

@@ -44,10 +44,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final link = 'narxoz://store/product/${widget.product.id}';
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       showDragHandle: true,
       backgroundColor: context.palette.surface,
       builder: (sheetContext) => SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,

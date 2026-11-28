@@ -116,4 +116,21 @@ void main() {
     expect(find.textContaining('43.2389° N, 76.8897° E'), findsOneWidget);
     expect(find.textContaining('2026-11-24 14:30:15'), findsOneWidget);
   });
+
+  test('deleting an entry is saved too', () async {
+    final prefs = await disk();
+    final diary = DiaryProvider(prefs);
+    for (final id in ['a', 'b']) {
+      await diary.add(
+        DiaryEntry(
+          id: id,
+          photoPath: '',
+          caption: id,
+          timestamp: DateTime(2026),
+        ),
+      );
+    }
+    await diary.delete('a');
+    expect(DiaryProvider(prefs).entries.map((e) => e.id), ['b']);
+  });
 }
