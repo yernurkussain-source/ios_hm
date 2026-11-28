@@ -16,10 +16,6 @@ class EmailTakenException implements Exception {
   const EmailTakenException();
 }
 
-/// Local accounts in SQLite. Only a salted PBKDF2 hash of the password is
-/// stored, never the password itself.
-// shortcut: accounts live on this device only; a real app keeps them on a
-// server (Firebase Auth / own API) and stores just a token locally.
 class UserRepository {
   UserRepository({this._factory, this._path});
 
@@ -74,12 +70,11 @@ class UserRepository {
     return RegisteredUser(name, email);
   }
 
-  /// The user, or null when the email is unknown or the password is wrong.
   Future<RegisteredUser?> authenticate(String email, String password) async {
     final db = await _database;
     final rows = await db.query(
       'users',
-      where: 'email = ?', // parameter, not string concat: no SQL injection
+      where: 'email = ?',
       whereArgs: [email],
       limit: 1,
     );
@@ -101,8 +96,6 @@ class UserRepository {
     return base64Encode(List.generate(16, (_) => random.nextInt(256)));
   }
 
-  /// PBKDF2-HMAC-SHA256 (one 32-byte block): slow on purpose, so a stolen
-  /// database is expensive to brute-force.
   static String _hash(String password, String salt) {
     final hmac = Hmac(sha256, utf8.encode(password));
     var block = hmac.convert([...base64Decode(salt), 0, 0, 0, 1]).bytes;
@@ -116,7 +109,6 @@ class UserRepository {
     return base64Encode(result);
   }
 
-  /// Compares in constant time, so timing doesn't leak how much matched.
   static bool _sameHash(String a, String b) {
     if (a.length != b.length) return false;
     var diff = 0;
